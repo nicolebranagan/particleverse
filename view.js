@@ -13,6 +13,7 @@ function onFieldClick(event) {
 	nextobject = new objType();
 	nextobject.x = posx;
 	nextobject.y = posy;
+
 	uiObjects.forEach(function(e) {e.onClick(event)});
 }
 
@@ -21,15 +22,13 @@ function Loop() {
 	ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
 
 	objects.forEach(function (e) {e.draw(ctx)});
-	
-	objects.forEach(function (e) {e.update()});
+	uiObjects.forEach(function (e) {e.draw(ctx)});
 	
 	if (nextobject) {
 		objects.push(nextobject);
 		nextobject = null;
 	}
-	
-	uiObjects.forEach(function (e) {e.draw(ctx)});
+	objects.forEach(function (e) {e.update()});
 	setTimeout(Loop, 10)
 }
 
@@ -65,6 +64,18 @@ uiObjects.push(new Button( {
 	label: "particle",
 	clickFunction: function() {
 		objType = Particle;
+		nextobject = null;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 85,
+	width: 50,
+	height: 25,
+	label: "factory",
+	clickFunction: function() {
+		objType = Factory;
 		nextobject = null;
 		}
 } ));
