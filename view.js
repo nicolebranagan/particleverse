@@ -2,6 +2,7 @@
 
 var gamecanvas = document.getElementById('gamecanvas');
 var objects = new Array();
+var newobjects;
 var uiObjects = new Array();
 var nextobject;
 var objType = Particle;
@@ -11,8 +12,8 @@ function onFieldClick(event) {
 	var posy = (event.pageY - gamecanvas.offsetTop);
 	
 	nextobject = new objType();
-	nextobject.x = posx/2;
-	nextobject.y = posy/2;
+	nextobject.x = Math.round(posx/2);
+	nextobject.y = Math.round(posy/2);
 
 	uiObjects.forEach(function(e) {e.onClick(event)});
 }
@@ -28,7 +29,9 @@ function Loop() {
 		objects.push(nextobject);
 		nextobject = null;
 	}
+	newobjects = objects;
 	objects.forEach(function (e) {e.update()});
+	objects = newobjects; // particles should not act on Objects directly
 	setTimeout(Loop, 10)
 }
 
@@ -76,6 +79,42 @@ uiObjects.push(new Button( {
 	label: "factory",
 	clickFunction: function() {
 		objType = Factory;
+		nextobject = null;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 110,
+	width: 50,
+	height: 25,
+	label: "oil",
+	clickFunction: function() {
+		objType = Oil;
+		nextobject = null;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 135,
+	width: 50,
+	height: 25,
+	label: "well",
+	clickFunction: function() {
+		objType = Well;
+		nextobject = null;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 160,
+	width: 50,
+	height: 25,
+	label: "fire",
+	clickFunction: function() {
+		objType = Fire;
 		nextobject = null;
 		}
 } ));
