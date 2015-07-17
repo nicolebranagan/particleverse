@@ -11,8 +11,8 @@ function onFieldClick(event) {
 	var posy = (event.pageY - gamecanvas.offsetTop);
 	
 	nextobject = new objType();
-	nextobject.x = posx;
-	nextobject.y = posy;
+	nextobject.x = posx/2;
+	nextobject.y = posy/2;
 
 	uiObjects.forEach(function(e) {e.onClick(event)});
 }

@@ -7,12 +7,12 @@ function Particle(options) {
 
 Particle.prototype.draw = function(context) {
 	context.fillStyle = this.style;
-	context.fillRect(this.x,this.y,2,2);
+	context.fillRect(this.x*2,this.y*2,2,2);
 }
 
 Particle.prototype.update = function() {
 	var ytest = this.y - this.g;	
-	if (ytest < 480 && ytest > 0) {
+	if (ytest < 240 && ytest > 0) {
 		if (!objects.reduce(particleInteraction(this.x, ytest), false))
 			this.y = ytest;
 		else {
