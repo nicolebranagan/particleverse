@@ -40,7 +40,6 @@ function Factory() {
 }
 Factory.prototype.update = function() {
 	this.counter = this.counter + 1;
-	console.log(this.counter);
 	if (this.counter == 2) {
 	var obj = new Particle();
 	obj.x = this.x + Math.floor(Math.random() * 3 - 1);
