@@ -36,13 +36,19 @@ Factory.prototype.constructor = Factory;
 function Factory() {
 	this.g = 0;
 	this.style = "#F00";
+	this.counter = 0;
 }
 Factory.prototype.update = function() {
+	this.counter = this.counter + 1;
+	console.log(this.counter);
+	if (this.counter == 2) {
 	var obj = new Particle();
 	obj.x = this.x + Math.floor(Math.random() * 3 - 1);
 	obj.y = this.y + 1;
 	
 	objects.push(obj);
+	this.counter = 0;
+	}
 }
 
 particleInteraction = function(x, y, caller){
