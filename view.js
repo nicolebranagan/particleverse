@@ -3,43 +3,69 @@
 var gamecanvas = document.getElementById('gamecanvas');
 var objects = new Array();
 var uiObjects = new Array();
-var nextparticle;
+var nextobject;
+var objType = Particle;
 
 function onFieldClick(event) {	
 	var posx = (event.pageX - gamecanvas.offsetLeft);
 	var posy = (event.pageY - gamecanvas.offsetTop);
 	
-	nextparticle = new Particle( {
-		x: posx,
-		y: posy,
-		g: -1 
-	} );
-	
+	nextobject = new objType();
+	nextobject.x = posx;
+	nextobject.y = posy;
 	uiObjects.forEach(function(e) {e.onClick(event)});
 }
 
 function Loop() {
 	ctx = gamecanvas.getContext("2d");
 	ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
-	if (nextparticle) {
-		objects.push(nextparticle);
-		nextparticle = null;
-	}
+
 	objects.forEach(function (e) {e.draw(ctx)});
+	
 	objects.forEach(function (e) {e.update()});
 	
+	if (nextobject) {
+		objects.push(nextobject);
+		nextobject = null;
+	}
+	
 	uiObjects.forEach(function (e) {e.draw(ctx)});
-	setTimeout(Loop, 50)
+	setTimeout(Loop, 10)
 }
 
 uiObjects.push(new Button( {
 	x: 10,
 	y: 10,
 	width: 50,
-	height: 20,
-	label: "clear",
+	height: 25,
+	label: "Clear",
 	clickFunction: function() {
 		objects = new Array();
+		nextobject = null;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 35,
+	width: 50,
+	height: 25,
+	label: "solid",
+	clickFunction: function() {
+		objType = Solid;
+		nextobject = null;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 60,
+	width: 50,
+	height: 25,
+	label: "particle",
+	clickFunction: function() {
+		objType = Particle;
+		nextobject = null;
 		}
 } ));
 gamecanvas.addEventListener("mousedown", onFieldClick, false);

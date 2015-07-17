@@ -1,10 +1,8 @@
 // Particle constructor
 
 function Particle(options) {
-	this.x = options.x; // screen pixels
-	this.y = options.y; // screen pixels
-	this.g = options.g; // pixels / click
-	this.style = options.style || "#FFF" ; // style
+	this.g = -1; // pixels / click
+	this.style = "#FFF" ; // style
 }
 
 Particle.prototype.draw = function(context) {
@@ -25,4 +23,11 @@ Particle.prototype.update = function() {
 	
 	if (ytest < 480 && ytest > 0 && !objects.reduce(particleInteraction(this.x), false))
 		this.y = ytest;
+}
+
+Solid.prototype = new Particle();
+Solid.prototype.constructor = Solid;
+function Solid(options) {
+	this.g = 0; // pixels / click
+	this.style = "#888" ; // style
 }
