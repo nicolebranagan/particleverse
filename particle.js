@@ -50,7 +50,7 @@ Antiparticle.prototype.update = function() {
 				var collided = true;
 				if (testobj.matter) {
 					newobjects.splice( i, 1 ); // annihilate
-					newobjects[index] = new Fire();
+					newobjects[index] = new Explosion(20);
 					newobjects[index].x = this.x;
 					newobjects[index].y = ytest;
 				}
@@ -258,7 +258,7 @@ function Water() {
 	this.style = "cyan" ; // style
 	this.flammable = false;
 	this.wet = true;
-	this.lubricant = false;
+	this.lubricant = true;
 	this.matter = true;
 }
 
@@ -345,6 +345,61 @@ Nanobot.prototype.update = function() {
 	if (this.counter < 0) {
 		index = newobjects.indexOf(this);
 		newobjects[index] = new Rust();
+		newobjects[index].x = this.x;
+		newobjects[index].y = this.y;
+	}
+}
+
+Explosion.prototype = new Particle();
+Explosion.prototype.constructor = Explosion;
+function Explosion(count) {
+	this.g = 0;
+	this.style = "#E92";
+	this.flammable = false;
+	this.count = count;
+	this.wet = false;
+	this.lubricant = false;
+	this.matter = false;
+}
+Explosion.prototype.update = function() {
+	if (this.count > 0) {
+		var testx = new Array();
+		var testy = new Array();
+		
+		testx[0] = this.x + 1;
+		testy[0] = this.y;
+		testx[1] = this.x - 1;
+		testy[1] = this.y;
+		testx[2] = this.x;
+		testy[2] = this.y + 1;
+		testx[3] = this.x;
+		testy[3] = this.y - 1;
+		
+		for (j = 0; j < 4; j++) {
+			var replaced = false;
+			for (i = 0; i < objects.length; i++) {
+				var testobj = objects[i];
+				if ( ( Math.abs(testobj.x - testx[j]) < 1 ) && ( Math.abs(testobj.y - testy[j]) < 1 ) ) {
+					newobjects[i] = new Explosion(this.count - 1);
+					newobjects[i].x = testobj.x;
+					newobjects[i].y = testobj.y;
+					replaced = true;
+				}
+			}
+			
+			if (!replaced) {
+				var newexp = new Explosion(this.count - 1);
+				newexp.x = testx[j];
+				newexp.y = testy[j];
+				newobjects.push(newexp);
+			}
+		}
+		
+		this.count = this.count - 1;
+	}
+	else {
+		var index = newobjects.indexOf(this);
+		newobjects[index] = new Fire();
 		newobjects[index].x = this.x;
 		newobjects[index].y = this.y;
 	}
