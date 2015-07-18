@@ -7,15 +7,60 @@ var uiObjects = new Array();
 var nextobject;
 var objType = Particle;
 
-function onFieldClick(event) {	
-	var posx = (event.pageX - gamecanvas.offsetLeft);
-	var posy = (event.pageY - gamecanvas.offsetTop);
-	
-	nextobject = new objType();
-	nextobject.x = Math.round(posx/2);
-	nextobject.y = Math.round(posy/2);
+var canDrag = false;
+var nowDragging = false;
 
+var eraseMode = false;
+
+function onFieldClick(event) {	
+	var posx = Math.round((event.pageX - gamecanvas.offsetLeft)/2);
+	var posy = Math.round((event.pageY - gamecanvas.offsetTop)/2);
+	
+	if (!eraseMode) {
+		nextobject = new objType();
+		nextobject.x = posx;
+		nextobject.y = posy;
+	}
+	else {
+		for (i = (objects.length - 1); i >= 0; i--) {
+			if ((Math.abs(objects[i].x - posx) < 2) && (Math.abs(objects[i].y - posy) < 2)) {
+				objects.splice(i,1);
+			}
+		}
+	}
+	
+	if (canDrag)
+		nowDragging = true;
+	
 	uiObjects.forEach(function(e) {e.onClick(event)});
+}
+
+function onMouseUp(event) {
+	nowDragging = false;
+}
+
+function onMouseMove(event) {
+	if (canDrag && nowDragging) {
+		var posx = Math.round((event.pageX - gamecanvas.offsetLeft)/2);
+		var posy = Math.round((event.pageY - gamecanvas.offsetTop)/2);
+		
+		if (!eraseMode) {
+			if ((nextobject) && (nextobject.x != posx) && (nextobject.y != posy)) {
+				objects.push(nextobject);
+			}
+			
+			nextobject = new objType();
+			nextobject.x = posx;
+			nextobject.y = posy;
+		}
+		else {
+			for (i = (objects.length - 1); i >= 0; i--) {
+				if ((Math.abs(objects[i].x - posx) < 2) && (Math.abs(objects[i].y - posy) < 2)) {
+					objects.splice(i,1);
+				}
+			}
+		}
+	}
 }
 
 function Loop() {
@@ -48,6 +93,19 @@ uiObjects.push(new Button( {
 } ));
 
 uiObjects.push(new Button( {
+	x: 60,
+	y: 10,
+	width: 50,
+	height: 25,
+	label: "eraser",
+	clickFunction: function() {
+		canDrag = true;
+		eraseMode = true;
+		nextobject = null;
+		}
+} ));
+
+uiObjects.push(new Button( {
 	x: 10,
 	y: 35,
 	width: 50,
@@ -56,6 +114,8 @@ uiObjects.push(new Button( {
 	clickFunction: function() {
 		objType = Solid;
 		nextobject = null;
+		canDrag = true;
+		eraseMode = false;
 		}
 } ));
 
@@ -68,6 +128,8 @@ uiObjects.push(new Button( {
 	clickFunction: function() {
 		objType = Particle;
 		nextobject = null;
+		canDrag = false;
+		eraseMode = false;
 		}
 } ));
 
@@ -80,6 +142,8 @@ uiObjects.push(new Button( {
 	clickFunction: function() {
 		objType = Factory;
 		nextobject = null;
+		canDrag = false;
+		eraseMode = false;
 		}
 } ));
 
@@ -92,6 +156,8 @@ uiObjects.push(new Button( {
 	clickFunction: function() {
 		objType = Oil;
 		nextobject = null;
+		canDrag = false;
+		eraseMode = false;
 		}
 } ));
 
@@ -104,6 +170,8 @@ uiObjects.push(new Button( {
 	clickFunction: function() {
 		objType = Well;
 		nextobject = null;
+		canDrag = false;
+		eraseMode = false;
 		}
 } ));
 
@@ -112,13 +180,31 @@ uiObjects.push(new Button( {
 	y: 160,
 	width: 50,
 	height: 25,
+	label: "wick",
+	clickFunction: function() {
+		objType = Wick;
+		nextobject = null;
+		canDrag = true;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 185,
+	width: 50,
+	height: 25,
 	label: "fire",
 	clickFunction: function() {
 		objType = Fire;
 		nextobject = null;
+		canDrag = false;
+		eraseMode = false;
 		}
 } ));
-gamecanvas.addEventListener("mousedown", onFieldClick, false);
 
+gamecanvas.addEventListener("mousedown", onFieldClick, false);
+gamecanvas.addEventListener("mouseup", onMouseUp, false);
+gamecanvas.addEventListener("mousemove", onMouseMove, false);
 
 Loop();

@@ -98,6 +98,15 @@ Fire.prototype.update = function() {
 		this.deathcount = this.deathcount - 1;
 }
 
+Wick.prototype = new Particle();
+Wick.prototype.constructor = Wick;
+function Wick() {
+	this.g = 0; // pixels / click
+	this.style = "#ffd" ; // style
+	this.flammable = true;
+}
+Wick.prototype.update = function() {;}
+
 particleInteraction = function(x, y, caller){
 	return function(prev, curr, index, array) {
 		if (prev)
