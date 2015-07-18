@@ -11,6 +11,7 @@ var canDrag = false;
 var nowDragging = false;
 
 var eraseMode = false;
+var paused = false;
 
 function onFieldClick(event) {	
 	var posx = Math.round((event.pageX - gamecanvas.offsetLeft)/2);
@@ -74,11 +75,32 @@ function Loop() {
 		objects.push(nextobject);
 		nextobject = null;
 	}
-	newobjects = objects;
-	objects.forEach(function (e) {e.update()});
-	objects = newobjects; // particles should not act on Objects directly
+	if (!paused) {
+		newobjects = objects;
+		objects.forEach(function (e) {e.update()});
+		objects = newobjects; // particles should not act on Objects directly
+	}
 	setTimeout(Loop, 10)
 }
+
+uiObjects.push(new Button( {
+	x: 580,
+	y: 10,
+	width: 50,
+	height: 25,
+	label: "Pause",
+	clickFunction: function() {
+		if (paused) {
+			this.label = "Pause";
+			paused = false;
+		}
+		else {
+			this.label = "Play";
+			paused = true;
+		}
+		nextobject = null;
+	}
+} ));
 
 uiObjects.push(new Button( {
 	x: 10,
@@ -211,6 +233,20 @@ uiObjects.push(new Button( {
 	label: "torch",
 	clickFunction: function() {
 		objType = Torch;
+		nextobject = null;
+		canDrag = false;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 235,
+	width: 50,
+	height: 25,
+	label: "plant",
+	clickFunction: function() {
+		objType = Plant;
 		nextobject = null;
 		canDrag = false;
 		eraseMode = false;
