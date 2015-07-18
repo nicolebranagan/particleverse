@@ -153,7 +153,7 @@ Plant.prototype.constructor = Plant;
 function Plant() {
 	this.g = 0;
 	this.style = "#0A0";
-	this.flammable = true;
+	this.flammable = false;
 	this.counter = 20;
 	this.wet = false;
 }
