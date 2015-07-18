@@ -70,6 +70,10 @@ Well.prototype = new generalFactory(Oil);
 Well.prototype.constructor = Well;
 function Well() {}
 
+Torch.prototype = new generalFactory(Fire);
+Torch.prototype.constructor = Torch;
+function Torch() {}
+
 Fire.prototype = new Particle();
 Fire.prototype.constructor = Fire;
 function Fire() {

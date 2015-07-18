@@ -128,7 +128,7 @@ uiObjects.push(new Button( {
 	clickFunction: function() {
 		objType = Particle;
 		nextobject = null;
-		canDrag = false;
+		canDrag = true;
 		eraseMode = false;
 		}
 } ));
@@ -156,7 +156,7 @@ uiObjects.push(new Button( {
 	clickFunction: function() {
 		objType = Oil;
 		nextobject = null;
-		canDrag = false;
+		canDrag = true;
 		eraseMode = false;
 		}
 } ));
@@ -197,6 +197,20 @@ uiObjects.push(new Button( {
 	label: "fire",
 	clickFunction: function() {
 		objType = Fire;
+		nextobject = null;
+		canDrag = true;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 210,
+	width: 50,
+	height: 25,
+	label: "torch",
+	clickFunction: function() {
+		objType = Torch;
 		nextobject = null;
 		canDrag = false;
 		eraseMode = false;
