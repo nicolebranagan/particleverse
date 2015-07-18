@@ -160,6 +160,20 @@ uiObjects.push(new Button( {
 	y: 85,
 	width: 50,
 	height: 25,
+	label: "aparti",
+	clickFunction: function() {
+		objType = Antiparticle;
+		nextobject = null;
+		canDrag = true;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 110,
+	width: 50,
+	height: 25,
 	label: "factory",
 	clickFunction: function() {
 		objType = Factory;
@@ -171,7 +185,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 110,
+	y: 135,
 	width: 50,
 	height: 25,
 	label: "oil",
@@ -185,7 +199,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 135,
+	y: 160,
 	width: 50,
 	height: 25,
 	label: "well",
@@ -199,7 +213,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 160,
+	y: 185,
 	width: 50,
 	height: 25,
 	label: "wick",
@@ -213,7 +227,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 185,
+	y: 210,
 	width: 50,
 	height: 25,
 	label: "fire",
@@ -227,7 +241,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 210,
+	y: 235,
 	width: 50,
 	height: 25,
 	label: "torch",
@@ -241,7 +255,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 235,
+	y: 260,
 	width: 50,
 	height: 25,
 	label: "plant",
@@ -255,7 +269,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 260,
+	y: 285,
 	width: 50,
 	height: 25,
 	label: "water",
@@ -269,7 +283,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 285,
+	y: 310,
 	width: 50,
 	height: 25,
 	label: "fountain",
@@ -277,6 +291,20 @@ uiObjects.push(new Button( {
 		objType = Fountain;
 		nextobject = null;
 		canDrag = true;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 335,
+	width: 50,
+	height: 25,
+	label: "nanobot",
+	clickFunction: function() {
+		objType = Nanobot;
+		nextobject = null;
+		canDrag = false;
 		eraseMode = false;
 		}
 } ));

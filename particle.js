@@ -5,6 +5,8 @@ function Particle(options) {
 	this.style = "#FFF" ; // style
 	this.flammable = false;
 	this.wet = false;
+	this.lubricant = false;
+	this.matter = true;
 }
 
 Particle.prototype.draw = function(context) {
@@ -25,6 +27,47 @@ Particle.prototype.update = function() {
 	}
 }
 
+Antiparticle.prototype = new Particle();
+Antiparticle.prototype.constructor = Antiparticle;
+function Antiparticle() {
+	this.g = 1; // pixels / click
+	this.style = "#FFF" ; // style
+	this.flammable = false;
+	this.wet = false;
+	this.lubricant = false;
+	this.matter = false;
+}
+
+Antiparticle.prototype.update = function() {
+	var ytest = this.y - this.g;
+	var xtest = this.x;
+	var index = newobjects.indexOf(this);
+	if (ytest < 240 && ytest >= 0) {
+		var collided = false;
+		for ( i = 0; i < objects.length; i++ ) {
+			var testobj = objects[i];
+			if ( !(testobj === this) && ( Math.abs(testobj.x - this.x) < 1 ) && ( Math.abs(testobj.y - ytest) < 1 ) ) {
+				var collided = true;
+				if (testobj.matter) {
+					newobjects.splice( i, 1 ); // annihilate
+					newobjects[index] = new Fire();
+					newobjects[index].x = this.x;
+					newobjects[index].y = ytest;
+				}
+				else {
+					if ((xtest < 320) && (xtest >= 0) && !objects.reduce(particleInteraction(xtest, this.y), false))
+						xtest = this.x + Math.sign(Math.random() - 0.5);
+				}
+			}
+		}
+		if (newobjects[index] === this) {
+			this.x = xtest;
+			if (!collided)
+				this.y = ytest;
+		}
+	}
+}
+
 Oil.prototype = new Particle();
 Oil.prototype.constructor = Oil;
 function Oil() {
@@ -32,6 +75,8 @@ function Oil() {
 	this.style = "brown" ; // style
 	this.flammable = true;
 	this.wet = false;
+	this.lubricant = true;
+	this.matter = true;
 }
 
 Solid.prototype = new Particle();
@@ -41,6 +86,8 @@ function Solid() {
 	this.style = "#888" ; // style
 	this.flammable = false;
 	this.wet = false;
+	this.lubricant = true;
+	this.matter = true;
 }
 Solid.prototype.update = function() {;}
 
@@ -53,6 +100,8 @@ function generalFactory(type) {
 	this.flammable = false;
 	this.objtype = type;
 	this.wet = false;
+	this.lubricant = false;
+	this.matter = false;
 }
 generalFactory.prototype.update = function() {
 	this.counter = this.counter + 1;
@@ -86,6 +135,8 @@ function Fire() {
 	this.deathcount = 2;
 	this.flammable = false;
 	this.wet = false;
+	this.lubricant = false;
+	this.matter = false;
 }
 Fire.prototype.update = function() {
 	for(i = 0; i < objects.length; i++) {
@@ -121,6 +172,8 @@ function Wick() {
 	this.style = "#ffd" ; // style
 	this.flammable = true;
 	this.wet = false;
+	this.lubricant = false;
+	this.matter = true;
 }
 Wick.prototype.update = function() {;}
 
@@ -131,6 +184,8 @@ function Wood() {
 	this.style = "#060" ; // style
 	this.flammable = true;
 	this.wet = false;
+	this.lubricant = false;
+	this.matter = true;
 }
 Wood.prototype.update = function() {
 	for(i = 0; i < objects.length; i++) {
@@ -156,6 +211,8 @@ function Plant() {
 	this.flammable = false;
 	this.counter = 20;
 	this.wet = false;
+	this.lubricant = false;
+	this.matter = true;
 }
 Plant.prototype.update = function() {
 	var testx = this.x; var testy = this.y;
@@ -197,6 +254,8 @@ function Water() {
 	this.style = "cyan" ; // style
 	this.flammable = false;
 	this.wet = true;
+	this.lubricant = false;
+	this.matter = true;
 }
 
 Fountain.prototype = new generalFactory(Water);
@@ -213,5 +272,76 @@ particleInteraction = function(x, y, caller){
 			else
 				return ((Math.abs(curr.y - y) < 1) && (Math.abs(curr.x - x) < 1));
 		}
+	}
+}
+
+
+Rust.prototype = new Particle();
+Rust.prototype.constructor = Rust;
+function Rust() {
+	this.g = 0; // pixels / click
+	this.style = "#866" ; // style
+	this.flammable = false;
+	this.wet = false;
+	this.lubricant = false;
+	this.matter = true;
+}
+Rust.prototype.update = function() {
+	for(i = 0; i < objects.length; i++) {
+		var testobj = objects[i];
+		
+		if ((testobj.lubricant)&& !(testobj === this)) {
+			if ( ( Math.abs(testobj.x - this.x) < 1.5 ) && ( Math.abs(testobj.y - this.y) < 1.5 ) ) {
+				newobjects.splice( i, 1 ); // remove the oil
+				var index = newobjects.indexOf(this);
+				newobjects[index] = new Nanobot();
+				newobjects[index].x = this.x;
+				newobjects[index].y = this.y;
+			}
+		}
+	}
+}
+
+Nanobot.prototype = new Particle();
+Nanobot.prototype.constructor = Nanobot;
+function Nanobot() {
+	this.g = 0;
+	this.style = "#AAA";
+	this.flammable = false;
+	this.counter = 20;
+	this.wet = false;
+	this.lubricant = false;
+	this.matter = true;
+}
+Nanobot.prototype.update = function() {
+	var testx = this.x; var testy = this.y;
+	if (Math.random() > 0.6) {
+		if ((Math.random() > 0.5) && (testx < 320)) 
+			testx = testx + 1;
+		else if ((Math.random() > 0.5) && (testx > 0))
+			testx = testx - 1;
+		else if ((Math.random() > 0.5) && (testy < 240)) 
+			testy = testy + 1;
+		else if ((testy > 0))
+			testy = testy - 1;
+		
+		if (!objects.reduce(particleInteraction(testx,testy,this),false)) {
+			var newVine = new Nanobot();
+			newVine.x = testx; newVine.y=testy;
+			objects.push(newVine);
+			
+			index = newobjects.indexOf(this);
+			newobjects[index] = new Rust();
+			newobjects[index].x = this.x;
+			newobjects[index].y = this.y;
+		}
+	}
+	
+	this.counter = this.counter - 1;
+	if (this.counter < 0) {
+		index = newobjects.indexOf(this);
+		newobjects[index] = new Rust();
+		newobjects[index].x = this.x;
+		newobjects[index].y = this.y;
 	}
 }
