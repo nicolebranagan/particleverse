@@ -4,6 +4,7 @@ function Particle(options) {
 	this.g = -1; // pixels / click
 	this.style = "#FFF" ; // style
 	this.flammable = false;
+	this.wet = false;
 }
 
 Particle.prototype.draw = function(context) {
@@ -30,6 +31,7 @@ function Oil() {
 	this.g = -1; // pixels / click
 	this.style = "brown" ; // style
 	this.flammable = true;
+	this.wet = false;
 }
 
 Solid.prototype = new Particle();
@@ -38,6 +40,7 @@ function Solid() {
 	this.g = 0; // pixels / click
 	this.style = "#888" ; // style
 	this.flammable = false;
+	this.wet = false;
 }
 Solid.prototype.update = function() {;}
 
@@ -49,6 +52,7 @@ function generalFactory(type) {
 	this.counter = 0;
 	this.flammable = false;
 	this.objtype = type;
+	this.wet = false;
 }
 generalFactory.prototype.update = function() {
 	this.counter = this.counter + 1;
@@ -81,6 +85,7 @@ function Fire() {
 	this.style = "#F00";
 	this.deathcount = 2;
 	this.flammable = false;
+	this.wet = false;
 }
 Fire.prototype.update = function() {
 	for(i = 0; i < objects.length; i++) {
@@ -92,6 +97,13 @@ Fire.prototype.update = function() {
 				newobjects[i].x = testobj.x;
 				newobjects[i].y = testobj.y;
 			}				
+		}
+		else if (testobj.wet) {
+			if ( ( Math.abs(testobj.x - this.x) < 1.5 ) && ( Math.abs(testobj.y - this.y) < 1.5 ) ) {
+				// Extinguish the fire
+				var index = newobjects.indexOf(this);
+				newobjects.splice( index, 1 );
+			}
 		}
 	}
 	
@@ -108,6 +120,7 @@ function Wick() {
 	this.g = 0; // pixels / click
 	this.style = "#ffd" ; // style
 	this.flammable = true;
+	this.wet = false;
 }
 Wick.prototype.update = function() {;}
 
@@ -117,8 +130,23 @@ function Wood() {
 	this.g = 0; // pixels / click
 	this.style = "#060" ; // style
 	this.flammable = true;
+	this.wet = false;
 }
-Wood.prototype.update = function() {;}
+Wood.prototype.update = function() {
+	for(i = 0; i < objects.length; i++) {
+		var testobj = objects[i];
+		
+		if ((testobj.wet) && !(testobj === this)) {
+			if ( ( Math.abs(testobj.x - this.x) < 1.5 ) && ( Math.abs(testobj.y - this.y) < 1.5 ) ) {
+				newobjects.splice( i, 1 ); // remove the water
+				var index = newobjects.indexOf(this);
+				newobjects[index] = new Plant();
+				newobjects[index].x = this.x;
+				newobjects[index].y = this.y;
+			}
+		}
+	}
+}
 
 Plant.prototype = new Particle();
 Plant.prototype.constructor = Plant;
@@ -127,6 +155,7 @@ function Plant() {
 	this.style = "#0A0";
 	this.flammable = true;
 	this.counter = 20;
+	this.wet = false;
 }
 Plant.prototype.update = function() {
 	var testx = this.x; var testy = this.y;
@@ -160,6 +189,19 @@ Plant.prototype.update = function() {
 		newobjects[index].y = this.y;
 	}
 }
+
+Water.prototype = new Particle();
+Water.prototype.constructor = Water;
+function Water() {
+	this.g = -1; // pixels / click
+	this.style = "cyan" ; // style
+	this.flammable = false;
+	this.wet = true;
+}
+
+Fountain.prototype = new generalFactory(Water);
+Fountain.prototype.constructor = Fountain;
+function Fountain() {}
 
 particleInteraction = function(x, y, caller){
 	return function(prev, curr, index, array) {

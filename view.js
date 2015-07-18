@@ -253,6 +253,34 @@ uiObjects.push(new Button( {
 		}
 } ));
 
+uiObjects.push(new Button( {
+	x: 10,
+	y: 260,
+	width: 50,
+	height: 25,
+	label: "water",
+	clickFunction: function() {
+		objType = Water;
+		nextobject = null;
+		canDrag = true;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 285,
+	width: 50,
+	height: 25,
+	label: "fountain",
+	clickFunction: function() {
+		objType = Fountain;
+		nextobject = null;
+		canDrag = true;
+		eraseMode = false;
+		}
+} ));
+
 gamecanvas.addEventListener("mousedown", onFieldClick, false);
 gamecanvas.addEventListener("mouseup", onMouseUp, false);
 gamecanvas.addEventListener("mousemove", onMouseMove, false);
