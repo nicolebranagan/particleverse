@@ -103,7 +103,7 @@ uiObjects.push(new Button( {
 } ));
 
 uiObjects.push(new Button( {
-	x: 10,
+	x: 530,
 	y: 10,
 	width: 50,
 	height: 25,
@@ -115,7 +115,7 @@ uiObjects.push(new Button( {
 } ));
 
 uiObjects.push(new Button( {
-	x: 60,
+	x: 10,
 	y: 10,
 	width: 50,
 	height: 25,

@@ -126,7 +126,7 @@ function Plant() {
 	this.g = 0;
 	this.style = "#0A0";
 	this.flammable = true;
-	this.counter = 15;
+	this.counter = 20;
 }
 Plant.prototype.update = function() {
 	var testx = this.x; var testy = this.y;
@@ -144,6 +144,11 @@ Plant.prototype.update = function() {
 			var newVine = new Plant();
 			newVine.x = testx; newVine.y=testy;
 			objects.push(newVine);
+			
+			index = newobjects.indexOf(this);
+			newobjects[index] = new Wood();
+			newobjects[index].x = this.x;
+			newobjects[index].y = this.y;
 		}
 	}
 	
