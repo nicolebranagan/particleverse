@@ -54,16 +54,15 @@ Antiparticle.prototype.update = function() {
 					newobjects[index].x = this.x;
 					newobjects[index].y = ytest;
 				}
-				else {
-					if ((xtest < 320) && (xtest >= 0) && !objects.reduce(particleInteraction(xtest, this.y), false))
-						xtest = this.x + Math.sign(Math.random() - 0.5);
-				}
 			}
 		}
 		if (newobjects[index] === this) {
-			this.x = xtest;
+			var xtest = this.x + Math.sign(Math.random() - 0.5);;
 			if (!collided)
 				this.y = ytest;
+			else
+				if ((xtest < 320) && (xtest >= 0) && !objects.reduce(particleInteraction(xtest, this.y), false))
+						this.x = xtest;
 		}
 	}
 }
@@ -126,6 +125,11 @@ function Well() {}
 Torch.prototype = new generalFactory(Fire);
 Torch.prototype.constructor = Torch;
 function Torch() {}
+
+
+Collider.prototype = new generalFactory(Antiparticle);
+Collider.prototype.constructor = Collider;
+function Collider() {}
 
 Fire.prototype = new Particle();
 Fire.prototype.constructor = Fire;
@@ -283,7 +287,7 @@ function Rust() {
 	this.style = "#866" ; // style
 	this.flammable = false;
 	this.wet = false;
-	this.lubricant = false;
+	this.lubricant = true;
 	this.matter = true;
 }
 Rust.prototype.update = function() {

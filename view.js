@@ -309,6 +309,20 @@ uiObjects.push(new Button( {
 		}
 } ));
 
+uiObjects.push(new Button( {
+	x: 10,
+	y: 360,
+	width: 50,
+	height: 25,
+	label: "collider",
+	clickFunction: function() {
+		objType = Collider;
+		nextobject = null;
+		canDrag = false;
+		eraseMode = false;
+		}
+} ));
+
 gamecanvas.addEventListener("mousedown", onFieldClick, false);
 gamecanvas.addEventListener("mouseup", onMouseUp, false);
 gamecanvas.addEventListener("mousemove", onMouseMove, false);
