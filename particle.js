@@ -292,7 +292,7 @@ Rust.prototype.update = function() {
 			if ( ( Math.abs(testobj.x - this.x) < 1.5 ) && ( Math.abs(testobj.y - this.y) < 1.5 ) ) {
 				newobjects.splice( i, 1 ); // remove the oil
 				var index = newobjects.indexOf(this);
-				newobjects[index] = new Nanobot();
+				newobjects[index] = new Nanobot(true);
 				newobjects[index].x = this.x;
 				newobjects[index].y = this.y;
 			}
@@ -302,18 +302,20 @@ Rust.prototype.update = function() {
 
 Nanobot.prototype = new Particle();
 Nanobot.prototype.constructor = Nanobot;
-function Nanobot() {
+function Nanobot(fromRust) {
 	this.g = 0;
 	this.style = "#AAA";
 	this.flammable = false;
-	this.counter = 20;
+	this.counter = 10;
 	this.wet = false;
 	this.lubricant = false;
 	this.matter = true;
+	
+	this.fromRust = fromRust || false;
 }
 Nanobot.prototype.update = function() {
 	var testx = this.x; var testy = this.y;
-	if (Math.random() > 0.6) {
+	if (Math.random() > 0.8) {
 		if ((Math.random() > 0.5) && (testx < 320)) 
 			testx = testx + 1;
 		else if ((Math.random() > 0.5) && (testx > 0))
@@ -329,18 +331,28 @@ Nanobot.prototype.update = function() {
 			objects.push(newVine);
 			
 			index = newobjects.indexOf(this);
-			newobjects[index] = new Rust();
-			newobjects[index].x = this.x;
-			newobjects[index].y = this.y;
+			if (this.fromRust) {
+				newobjects.splice( index, 1 );
+			}
+			else {
+				newobjects[index] = new Rust();
+				newobjects[index].x = this.x;
+				newobjects[index].y = this.y;
+			}
 		}
 	}
 	
 	this.counter = this.counter - 1;
 	if (this.counter < 0) {
 		index = newobjects.indexOf(this);
-		newobjects[index] = new Rust();
-		newobjects[index].x = this.x;
-		newobjects[index].y = this.y;
+		if (this.fromRust) {
+			newobjects.splice( index, 1 );
+		}
+		else {
+			newobjects[index] = new Rust();
+			newobjects[index].x = this.x;
+			newobjects[index].y = this.y;
+		}
 	}
 }
 
