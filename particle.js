@@ -154,13 +154,6 @@ Fire.prototype.update = function() {
 				newobjects[i].y = testobj.y;
 			}				
 		}
-		else if (testobj.wet) {
-			if ( ( Math.abs(testobj.x - this.x) < 1.5 ) && ( Math.abs(testobj.y - this.y) < 1.5 ) ) {
-				// Extinguish the fire
-				var index = newobjects.indexOf(this);
-				newobjects.splice( index, 1 );
-			}
-		}
 	}
 	
 	if (this.deathcount < 0) {
@@ -355,7 +348,7 @@ Explosion.prototype = new Particle();
 Explosion.prototype.constructor = Explosion;
 function Explosion(count) {
 	this.g = 0;
-	this.style = "#D00";
+	this.style = "#900";
 	this.flammable = false;
 	this.count = count;
 	this.wet = false;

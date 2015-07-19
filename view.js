@@ -76,11 +76,16 @@ function Loop() {
 		nextobject = null;
 	}
 	if (!paused) {
-		newobjects = objects;
-		objects.forEach(function (e) {e.update()});
-		objects = newobjects; // particles should not act on Objects directly
+		Update();
 	}
+	
 	setTimeout(Loop, 10)
+}
+
+function Update() {
+	newobjects = objects;
+	objects.forEach(function (e) {e.update()});
+	objects = newobjects; // particles should not act on Objects directly
 }
 
 uiObjects.push(new Button( {
@@ -115,6 +120,18 @@ uiObjects.push(new Button( {
 } ));
 
 uiObjects.push(new Button( {
+	x: 580,
+	y: 35,
+	width: 50,
+	height: 25,
+	label: "Step",
+	clickFunction: function() {
+		Update();
+		nextobject = null;
+		}
+} ));
+
+uiObjects.push(new Button( {
 	x: 10,
 	y: 10,
 	width: 50,
@@ -132,20 +149,6 @@ uiObjects.push(new Button( {
 	y: 35,
 	width: 50,
 	height: 25,
-	label: "solid",
-	clickFunction: function() {
-		objType = Solid;
-		nextobject = null;
-		canDrag = true;
-		eraseMode = false;
-		}
-} ));
-
-uiObjects.push(new Button( {
-	x: 10,
-	y: 60,
-	width: 50,
-	height: 25,
 	label: "particle",
 	clickFunction: function() {
 		objType = Particle;
@@ -157,21 +160,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 85,
-	width: 50,
-	height: 25,
-	label: "aparti",
-	clickFunction: function() {
-		objType = Antiparticle;
-		nextobject = null;
-		canDrag = true;
-		eraseMode = false;
-		}
-} ));
-
-uiObjects.push(new Button( {
-	x: 10,
-	y: 110,
+	y: 60,
 	width: 50,
 	height: 25,
 	label: "factory",
@@ -185,7 +174,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 135,
+	y: 85,
 	width: 50,
 	height: 25,
 	label: "oil",
@@ -199,7 +188,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 160,
+	y: 110,
 	width: 50,
 	height: 25,
 	label: "well",
@@ -213,63 +202,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 185,
-	width: 50,
-	height: 25,
-	label: "wick",
-	clickFunction: function() {
-		objType = Wick;
-		nextobject = null;
-		canDrag = true;
-		eraseMode = false;
-		}
-} ));
-
-uiObjects.push(new Button( {
-	x: 10,
-	y: 210,
-	width: 50,
-	height: 25,
-	label: "fire",
-	clickFunction: function() {
-		objType = Fire;
-		nextobject = null;
-		canDrag = true;
-		eraseMode = false;
-		}
-} ));
-
-uiObjects.push(new Button( {
-	x: 10,
-	y: 235,
-	width: 50,
-	height: 25,
-	label: "torch",
-	clickFunction: function() {
-		objType = Torch;
-		nextobject = null;
-		canDrag = false;
-		eraseMode = false;
-		}
-} ));
-
-uiObjects.push(new Button( {
-	x: 10,
-	y: 260,
-	width: 50,
-	height: 25,
-	label: "plant",
-	clickFunction: function() {
-		objType = Plant;
-		nextobject = null;
-		canDrag = false;
-		eraseMode = false;
-		}
-} ));
-
-uiObjects.push(new Button( {
-	x: 10,
-	y: 285,
+	y: 135,
 	width: 50,
 	height: 25,
 	label: "water",
@@ -283,7 +216,7 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 310,
+	y: 160,
 	width: 50,
 	height: 25,
 	label: "fountain",
@@ -297,12 +230,26 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 335,
+	y: 185,
 	width: 50,
 	height: 25,
-	label: "nanobot",
+	label: "fire",
 	clickFunction: function() {
-		objType = Nanobot;
+		objType = Fire;
+		nextobject = null;
+		canDrag = true;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 210,
+	width: 50,
+	height: 25,
+	label: "torch",
+	clickFunction: function() {
+		objType = Torch;
 		nextobject = null;
 		canDrag = false;
 		eraseMode = false;
@@ -311,7 +258,21 @@ uiObjects.push(new Button( {
 
 uiObjects.push(new Button( {
 	x: 10,
-	y: 360,
+	y: 235,
+	width: 50,
+	height: 25,
+	label: "aparti",
+	clickFunction: function() {
+		objType = Antiparticle;
+		nextobject = null;
+		canDrag = true;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 10,
+	y: 260,
 	width: 50,
 	height: 25,
 	label: "collider",
@@ -324,8 +285,36 @@ uiObjects.push(new Button( {
 } ));
 
 uiObjects.push(new Button( {
-	x: 10,
-	y: 385,
+	x: 60,
+	y: 35,
+	width: 50,
+	height: 25,
+	label: "solid",
+	clickFunction: function() {
+		objType = Solid;
+		nextobject = null;
+		canDrag = true;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 60,
+	y: 60,
+	width: 50,
+	height: 25,
+	label: "wick",
+	clickFunction: function() {
+		objType = Wick;
+		nextobject = null;
+		canDrag = true;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 60,
+	y: 85,
 	width: 50,
 	height: 25,
 	label: "c4",
@@ -333,6 +322,34 @@ uiObjects.push(new Button( {
 		objType = C4;
 		nextobject = null;
 		canDrag = true;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 60,
+	y: 110,
+	width: 50,
+	height: 25,
+	label: "plant",
+	clickFunction: function() {
+		objType = Plant;
+		nextobject = null;
+		canDrag = false;
+		eraseMode = false;
+		}
+} ));
+
+uiObjects.push(new Button( {
+	x: 60,
+	y: 135,
+	width: 50,
+	height: 25,
+	label: "nanobot",
+	clickFunction: function() {
+		objType = Nanobot;
+		nextobject = null;
+		canDrag = false;
 		eraseMode = false;
 		}
 } ));
