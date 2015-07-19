@@ -141,6 +141,7 @@ function Fire() {
 	this.wet = false;
 	this.lubricant = false;
 	this.matter = false;
+	this.fire = true;
 }
 Fire.prototype.update = function() {
 	for(i = 0; i < objects.length; i++) {
@@ -354,12 +355,13 @@ Explosion.prototype = new Particle();
 Explosion.prototype.constructor = Explosion;
 function Explosion(count) {
 	this.g = 0;
-	this.style = "#E92";
+	this.style = "#D00";
 	this.flammable = false;
 	this.count = count;
 	this.wet = false;
 	this.lubricant = false;
 	this.matter = false;
+	this.fire = true;
 }
 Explosion.prototype.update = function() {
 	if (this.count > 0) {
@@ -380,9 +382,11 @@ Explosion.prototype.update = function() {
 			for (i = 0; i < objects.length; i++) {
 				var testobj = objects[i];
 				if ( ( Math.abs(testobj.x - testx[j]) < 1 ) && ( Math.abs(testobj.y - testy[j]) < 1 ) ) {
-					newobjects[i] = new Explosion(this.count - 1);
-					newobjects[i].x = testobj.x;
-					newobjects[i].y = testobj.y;
+					if (!testobj.fire) {
+						newobjects[i] = new Explosion(this.count - 1);
+						newobjects[i].x = testobj.x;
+						newobjects[i].y = testobj.y;
+					}
 					replaced = true;
 				}
 			}
@@ -397,10 +401,34 @@ Explosion.prototype.update = function() {
 		
 		this.count = this.count - 1;
 	}
-	else {
+	//else {
 		var index = newobjects.indexOf(this);
 		newobjects[index] = new Fire();
 		newobjects[index].x = this.x;
 		newobjects[index].y = this.y;
+	//}
+}
+
+C4.prototype = new Particle();
+C4.prototype.constructor = C4;
+function C4() {
+	this.g = 0; // pixels / click
+	this.style = "#DA8" ; // style
+	this.flammable = false;
+	this.wet = false;
+	this.lubricant = false;
+	this.matter = true;
+}
+C4.prototype.update = function() {
+	for (i = 0; i < objects.length; i++) {
+		var testobj = objects[i];
+		if ( ( Math.abs(testobj.x - this.x) < 2 ) && ( Math.abs(testobj.y - this.y) < 2 ) ) {
+			if (testobj.fire) {
+				var index = newobjects.indexOf(this);
+				newobjects[index] = new Explosion(90);
+				newobjects[index].x = this.x;
+				newobjects[index].y = this.y;
+			}
+		}
 	}
 }
