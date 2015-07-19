@@ -328,6 +328,7 @@ Nanobot.prototype.update = function() {
 		if (!objects.reduce(particleInteraction(testx,testy,this),false)) {
 			var newVine = new Nanobot();
 			newVine.x = testx; newVine.y=testy;
+			newVine.counter = this.counter;
 			objects.push(newVine);
 			
 			index = newobjects.indexOf(this);
