@@ -13,6 +13,51 @@ var nowDragging = false;
 var eraseMode = false;
 var paused = false;
 
+MapGrid = {
+    width: 320,
+    height: 240,
+    particles: new Array(320 * 240),
+    newparticles: new Array(320 * 240),
+    getParticle: function(x, y) {
+        return this.particles[this.width * y + x];
+    },
+    setParticle: function(x, y, particle) {
+        if (particle) {
+            particle.x = x;
+            particle.y = y;
+            this.newparticles[this.width * y + x] = particle;
+        }
+    },
+    clearParticle: function(x, y) {
+        this.newparticles[this.width * y + x] = null;
+    },
+    drawGrid: function(context) {
+        for (var x = 0; x < this.width; x++) {
+            for (var y = 0; y < this.height; y++) {
+                if (this.getParticle(x,y) != null) {
+                    context.fillStyle = this.getParticle(x,y).style;
+                    context.fillRect(x*2,y*2,2,2);
+                }
+            }
+        }
+    },
+    clearGrid: function() {
+        this.particles = new Array(320 * 240);
+        nextobject = null;
+    },
+    update: function() {
+        this.newparticles = this.particles.slice(0);
+        for (var x = 0; x < this.width; x++) {
+            for (var y = 0; y < this.height; y++) {
+                if (this.getParticle(x,y) != null) {
+                    this.getParticle(x,y).update();
+                }
+            }
+        }
+        this.particles = this.newparticles;
+    }
+}
+
 function onFieldClick(event) {	
 	var posx = Math.round((event.pageX - gamecanvas.offsetLeft)/2);
 	var posy = Math.round((event.pageY - gamecanvas.offsetTop)/2);
@@ -23,11 +68,7 @@ function onFieldClick(event) {
 		nextobject.y = posy;
 	}
 	else {
-		for (i = (objects.length - 1); i >= 0; i--) {
-			if ((Math.abs(objects[i].x - posx) < 2) && (Math.abs(objects[i].y - posy) < 2)) {
-				objects.splice(i,1);
-			}
-		}
+            MapGrid.clearParticle(posx, posy);
 	}
 	
 	if (canDrag)
@@ -46,20 +87,12 @@ function onMouseMove(event) {
 		var posy = Math.round((event.pageY - gamecanvas.offsetTop)/2);
 		
 		if (!eraseMode) {
-			if ((nextobject) && (nextobject.x != posx) && (nextobject.y != posy)) {
-				objects.push(nextobject);
-			}
-			
-			nextobject = new objType();
-			nextobject.x = posx;
-			nextobject.y = posy;
+                    nextobject = new objType();
+                    nextobject.x = posx;
+                    nextobject.y = posy;
 		}
 		else {
-			for (i = (objects.length - 1); i >= 0; i--) {
-				if ((Math.abs(objects[i].x - posx) < 2) && (Math.abs(objects[i].y - posy) < 2)) {
-					objects.splice(i,1);
-				}
-			}
+                    MapGrid.clearParticle(posx, posy);
 		}
 	}
 }
@@ -67,14 +100,16 @@ function onMouseMove(event) {
 function Loop() {
 	ctx = gamecanvas.getContext("2d");
 	ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
-
-	objects.forEach(function (e) {e.draw(ctx)});
+        
+        if (nextobject) {
+            MapGrid.setParticle(nextobject.x, nextobject.y, nextobject);
+            nextobject = null;
+        }
+        
+	//objects.forEach(function (e) {e.draw(ctx)});
+        MapGrid.drawGrid(ctx);
 	uiObjects.forEach(function (e) {e.draw(ctx)});
 	
-	if (nextobject) {
-		objects.push(nextobject);
-		nextobject = null;
-	}
 	if (!paused) {
 		Update();
 	}
@@ -83,9 +118,10 @@ function Loop() {
 }
 
 function Update() {
-	newobjects = objects;
-	objects.forEach(function (e) {e.update()});
-	objects = newobjects; // particles should not act on Objects directly
+    MapGrid.update();
+	//newobjects = objects;
+	//objects.forEach(function (e) {e.update()});
+	//objects = newobjects; // particles should not act on Objects directly
 }
 
 uiObjects.push(new Button( {
@@ -114,9 +150,8 @@ uiObjects.push(new Button( {
 	height: 25,
 	label: "Clear",
 	clickFunction: function() {
-		objects = new Array();
-		nextobject = null;
-		}
+            MapGrid.clearGrid();
+        }
 } ));
 
 uiObjects.push(new Button( {

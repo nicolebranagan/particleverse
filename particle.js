@@ -17,13 +17,19 @@ Particle.prototype.draw = function(context) {
 Particle.prototype.update = function() {
 	var ytest = this.y - this.g;	
 	if (ytest < 240 && ytest >= 0) {
-		if (!objects.reduce(particleInteraction(this.x, ytest), false))
-			this.y = ytest;
-		else {
-			xtest = this.x + Math.sign(Math.random() - 0.5);
-			if ((xtest < 320) && (xtest >= 0) && !objects.reduce(particleInteraction(xtest, this.y), false))
-				this.x = xtest;
-		}
+            if (MapGrid.getParticle(this.x, ytest) == null) {
+                MapGrid.clearParticle(this.x, this.y);
+                MapGrid.setParticle(this.x, ytest, this);
+                this.y = ytest;
+            }
+            else {
+                xtest = this.x + Math.sign(Math.random() - 0.5);
+                if ((xtest < 320) && (xtest >= 0) && MapGrid.getParticle(xtest, this.y) == null) {
+                    MapGrid.clearParticle(this.x, this.y);
+                    MapGrid.setParticle(xtest, this.y);
+                    this.x = xtest;
+                }
+            }
 	}
 }
 
@@ -39,32 +45,29 @@ function Antiparticle() {
 }
 
 Antiparticle.prototype.update = function() {
-	var ytest = this.y - this.g;
-	var xtest = this.x;
-	var index = newobjects.indexOf(this);
-	if (ytest < 240 && ytest >= 0) {
-		var collided = false;
-		for ( i = 0; i < objects.length; i++ ) {
-			var testobj = objects[i];
-			if ( !(testobj === this) && ( Math.abs(testobj.x - this.x) < 1 ) && ( Math.abs(testobj.y - ytest) < 1 ) ) {
-				var collided = true;
-				if (testobj.matter) {
-					newobjects.splice( i, 1 ); // annihilate
-					newobjects[index] = new Explosion(20);
-					newobjects[index].x = this.x;
-					newobjects[index].y = ytest;
-				}
-			}
-		}
-		if (newobjects[index] === this) {
-			var xtest = this.x + Math.sign(Math.random() - 0.5);;
-			if (!collided)
-				this.y = ytest;
-			else
-				if ((xtest < 320) && (xtest >= 0) && !objects.reduce(particleInteraction(xtest, this.y), false))
-						this.x = xtest;
-		}
-	}
+    var ytest = this.y - this.g;
+    var xtest = this.x;
+    //var index = newobjects.indexOf(this);
+    if (ytest < 240 && ytest >= 0) {
+        if (MapGrid.getParticle(this.x, ytest) == null) {
+            MapGrid.clearParticle(this.x, this.y);
+            MapGrid.setParticle(this.x, ytest, this);
+            this.y = ytest;
+        }
+        else if (MapGrid.getParticle(this.x, ytest).matter) {
+            MapGrid.clearParticle(this.x, this.y);
+            var exp = new Explosion(20); exp.x = this.x; exp.y = this.y;
+            MapGrid.setParticle(this.x, ytest, exp);
+        }
+        else {
+            xtest = this.x + Math.sign(Math.random() - 0.5);
+            if ((xtest < 320) && (xtest >= 0) && MapGrid.getParticle(xtest, this.y) == null) {
+                MapGrid.clearParticle(this.x, this.y);
+                MapGrid.setParticle(xtest, this.y);
+                this.x = xtest;
+            }
+        }
+    }
 }
 
 Oil.prototype = new Particle();
@@ -109,7 +112,9 @@ generalFactory.prototype.update = function() {
 	obj.x = this.x + Math.floor(Math.random() * 3 - 1);
 	obj.y = this.y + 1;
 	
-	newobjects.push(obj);
+        if (MapGrid.getParticle(obj.x, obj.y) == null) {
+            MapGrid.setParticle(obj.x, obj.y, obj);
+        }
 	this.counter = 0;
 	}
 }
@@ -144,21 +149,21 @@ function Fire() {
 	this.fire = true;
 }
 Fire.prototype.update = function() {
-	for(i = 0; i < objects.length; i++) {
-		var testobj = objects[i];
-		
-		if ((testobj.flammable) && !(testobj === this)) {
-			if ( ( Math.abs(testobj.x - this.x) < 1.5 ) && ( Math.abs(testobj.y - this.y) < 1.5 ) ) {
-				newobjects[i] = new Fire();
-				newobjects[i].x = testobj.x;
-				newobjects[i].y = testobj.y;
-			}				
-		}
-	}
+        var testx = 0; var testy = 0;
+        
+        for (var x = -1; x < 2; x++) {
+            for (var y = -1; y < 2; y++) {
+                testx = this.x + x;
+                testy = this.y + y;
+                var testobj = MapGrid.getParticle(testx,testy);
+                if (testobj != null && testobj.flammable) {
+                    MapGrid.setParticle(testx, testy, new Fire());
+                }
+            }
+        }
 	
 	if (this.deathcount < 0) {
-		var index = newobjects.indexOf(this);
-		newobjects.splice( index, 1 );
+		MapGrid.clearParticle(this.x, this.y);
 	} else 
 		this.deathcount = this.deathcount - 1;
 }
@@ -186,19 +191,17 @@ function Wood() {
 	this.matter = true;
 }
 Wood.prototype.update = function() {
-	for(i = 0; i < objects.length; i++) {
-		var testobj = objects[i];
-		
-		if ((testobj.wet) && !(testobj === this)) {
-			if ( ( Math.abs(testobj.x - this.x) < 1.5 ) && ( Math.abs(testobj.y - this.y) < 1.5 ) ) {
-				newobjects.splice( i, 1 ); // remove the water
-				var index = newobjects.indexOf(this);
-				newobjects[index] = new Plant();
-				newobjects[index].x = this.x;
-				newobjects[index].y = this.y;
-			}
-		}
-	}
+    for (var x = -1; x < 2; x++) {
+        for (var y = -1; y < 2; y++) {
+            testx = this.x + x;
+            testy = this.y + y;
+            var testobj = MapGrid.getParticle(testx,testy);
+            if (testobj && testobj.wet) {
+                MapGrid.setParticle(this.x, this.y, new Plant());
+                MapGrid.clearParticle(testx, testy);
+            }
+        }
+    }
 }
 
 Plant.prototype = new Particle();
@@ -223,25 +226,16 @@ Plant.prototype.update = function() {
 			testy = testy + 1;
 		else if ((testy > 0))
 			testy = testy - 1;
-		
-		if (!objects.reduce(particleInteraction(testx,testy,this),false)) {
-			var newVine = new Plant();
-			newVine.x = testx; newVine.y=testy;
-			objects.push(newVine);
-			
-			index = newobjects.indexOf(this);
-			newobjects[index] = new Wood();
-			newobjects[index].x = this.x;
-			newobjects[index].y = this.y;
-		}
+                
+                if (MapGrid.getParticle(testx, testy) == null) {
+                    MapGrid.setParticle(testx, testy, new Plant());
+                    MapGrid.setParticle(this.x, this.y, new Wood());
+                }
 	}
 	
 	this.counter = this.counter - 1;
 	if (this.counter < 0) {
-		index = newobjects.indexOf(this);
-		newobjects[index] = new Wood();
-		newobjects[index].x = this.x;
-		newobjects[index].y = this.y;
+                MapGrid.setParticle(this.x, this.y, new Wood());
 	}
 }
 
@@ -260,19 +254,6 @@ Fountain.prototype = new generalFactory(Water);
 Fountain.prototype.constructor = Fountain;
 function Fountain() {}
 
-particleInteraction = function(x, y, caller){
-	return function(prev, curr, index, array) {
-		if (prev)
-			return true;
-		else {
-			if ((caller) && (curr == caller))
-				return false;
-			else
-				return ((Math.abs(curr.y - y) < 1) && (Math.abs(curr.x - x) < 1));
-		}
-	}
-}
-
 
 Rust.prototype = new Particle();
 Rust.prototype.constructor = Rust;
@@ -285,7 +266,7 @@ function Rust() {
 	this.matter = true;
 }
 Rust.prototype.update = function() {
-	for(i = 0; i < objects.length; i++) {
+	/*for(i = 0; i < objects.length; i++) {
 		var testobj = objects[i];
 		
 		if ((testobj.lubricant)&& !(testobj === this)) {
@@ -297,7 +278,21 @@ Rust.prototype.update = function() {
 				newobjects[index].y = this.y;
 			}
 		}
-	}
+		
+
+	}*/
+	
+    for (var x = -1; x < 2; x++) {
+        for (var y = -1; y < 2; y++) {
+            testx = this.x + x;
+            testy = this.y + y;
+            var testobj = MapGrid.getParticle(testx,testy);
+            if (testobj && testobj != this && testobj.lubricant) {
+                MapGrid.setParticle(this.x, this.y, new Nanobot(true));
+                MapGrid.clearParticle(testx, testy);
+            }
+        }
+    }
 }
 
 Nanobot.prototype = new Particle();
@@ -324,8 +319,18 @@ Nanobot.prototype.update = function() {
 			testy = testy + 1;
 		else if ((testy > 0))
 			testy = testy - 1;
+                
+                if (!MapGrid.getParticle(testx, testy)) {
+                    MapGrid.setParticle(testx, testy, new Nanobot());
+                    if (this.fromRust) {
+                        MapGrid.clearParticle(this.x, this.y);
+                    }
+                    else {
+                        MapGrid.setParticle(this.x, this.y, new Rust());
+                    }
+                }
 		
-		if (!objects.reduce(particleInteraction(testx,testy,this),false)) {
+		/*if (!objects.reduce(particleInteraction(testx,testy,this),false)) {
 			var newVine = new Nanobot();
 			newVine.x = testx; newVine.y=testy;
 			newVine.counter = this.counter;
@@ -340,20 +345,18 @@ Nanobot.prototype.update = function() {
 				newobjects[index].x = this.x;
 				newobjects[index].y = this.y;
 			}
-		}
+		}*/
 	}
 	
 	this.counter = this.counter - 1;
 	if (this.counter < 0) {
-		index = newobjects.indexOf(this);
-		if (this.fromRust) {
-			newobjects.splice( index, 1 );
-		}
-		else {
-			newobjects[index] = new Rust();
-			newobjects[index].x = this.x;
-			newobjects[index].y = this.y;
-		}
+            MapGrid.setParticle(testx, testy, new Nanobot());
+            if (this.fromRust) {
+                MapGrid.clearParticle(this.x, this.y);
+            }
+            else {
+                MapGrid.setParticle(this.x, this.y, new Rust());
+            }
 	}
 }
 
@@ -384,7 +387,10 @@ Explosion.prototype.update = function() {
 		testy[3] = this.y - 1;
 		
 		for (j = 0; j < 4; j++) {
-			var replaced = false;
+                    var testobj = MapGrid.getParticle(testx[j], testy[j]);
+                    if (!testobj || !(testobj.fire))
+                        MapGrid.setParticle(testx[j], testy[j], new Explosion(this.count - 1));
+			/*var replaced = false;
 			for (i = 0; i < objects.length; i++) {
 				var testobj = objects[i];
 				if ( ( Math.abs(testobj.x - testx[j]) < 1 ) && ( Math.abs(testobj.y - testy[j]) < 1 ) ) {
@@ -402,17 +408,10 @@ Explosion.prototype.update = function() {
 				newexp.x = testx[j];
 				newexp.y = testy[j];
 				newobjects.push(newexp);
-			}
+			}*/
 		}
-		
-		this.count = this.count - 1;
 	}
-	//else {
-		var index = newobjects.indexOf(this);
-		newobjects[index] = new Fire();
-		newobjects[index].x = this.x;
-		newobjects[index].y = this.y;
-	//}
+	MapGrid.setParticle(this.x, this.y, new Fire());
 }
 
 C4.prototype = new Particle();
@@ -426,7 +425,7 @@ function C4() {
 	this.matter = true;
 }
 C4.prototype.update = function() {
-	for (i = 0; i < objects.length; i++) {
+/*	for (i = 0; i < objects.length; i++) {
 		var testobj = objects[i];
 		if ( ( Math.abs(testobj.x - this.x) < 2 ) && ( Math.abs(testobj.y - this.y) < 2 ) ) {
 			if (testobj.fire) {
@@ -437,4 +436,15 @@ C4.prototype.update = function() {
 			}
 		}
 	}
+	*/
+    for (var x = -1; x < 2; x++) {
+        for (var y = -1; y < 2; y++) {
+            testx = this.x + x;
+            testy = this.y + y;
+            var testobj = MapGrid.getParticle(testx,testy);
+            if (testobj && testobj != this && testobj.fire) {
+                MapGrid.setParticle(this.x, this.y, new Explosion(90));
+            }
+        }
+    }
 }
