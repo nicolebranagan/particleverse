@@ -79,6 +79,7 @@ function onFieldClick(event) {
 
 function onMouseUp(event) {
 	nowDragging = false;
+        uiObjects.forEach(function(e) {e.offClick(event)});
 }
 
 function onMouseMove(event) {
@@ -95,6 +96,7 @@ function onMouseMove(event) {
                     MapGrid.clearParticle(posx, posy);
 		}
 	}
+	uiObjects.forEach(function(e) {e.mouseMove(event)});
 }
 
 function Loop() {
