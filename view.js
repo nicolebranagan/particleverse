@@ -2,8 +2,8 @@
 
 var gamecanvas = document.getElementById('gamecanvas');
 var objects = new Array();
-var newobjects;
 var uiObjects = new Array();
+var killList = new Array();
 var nextobject;
 var objType = Particle;
 
@@ -18,6 +18,13 @@ MapGrid = {
     height: 240,
     particles: new Array(320 * 240),
     newparticles: new Array(320 * 240),
+    createParticle: function(x, y, particle) {
+        if (particle) {
+            particle.x = x;
+            particle.y = y;
+            this.particles[this.width * y + x] = particle;
+        }
+    },
     getParticle: function(x, y) {
         var part = this.particles[this.width * y + x];
         if (part === null || part === undefined)
@@ -66,11 +73,12 @@ MapGrid = {
                 }
             }
         }
-        if (nextobject) {
-            MapGrid.setParticle(nextobject.x, nextobject.y, nextobject);
-            nextobject = null;
-        }
         this.particles = this.newparticles.slice(0);
+        
+        for (var i = 0; i < killList.length; i++) {
+            this.particles[killList[i].y * this.width + killList[i].x] = null;
+        }
+        killList = new Array();
     }
 }
 
@@ -84,7 +92,11 @@ function onFieldClick(event) {
 		nextobject.y = posy;
 	}
 	else {
-            MapGrid.clearParticle(posx, posy);
+            var dead = {
+                x: posx,
+                y: posy
+            }
+            killList.push(dead);
 	}
 	
 	if (canDrag)
@@ -109,7 +121,11 @@ function onMouseMove(event) {
                     nextobject.y = posy;
 		}
 		else {
-                    MapGrid.clearParticle(posx, posy);
+                    var dead = {
+                        x: posx,
+                        y: posy
+                    }
+                    killList.push(dead);
 		}
 	}
 	uiObjects.forEach(function(e) {e.mouseMove(event)});
@@ -119,24 +135,20 @@ function Loop() {
 	ctx = gamecanvas.getContext("2d");
 	ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
         
-
+        if (nextobject) {
+            MapGrid.createParticle(nextobject.x, nextobject.y, nextobject);
+            nextobject = null;
+        }
         
 	//objects.forEach(function (e) {e.draw(ctx)});
         MapGrid.drawGrid(ctx);
 	uiObjects.forEach(function (e) {e.draw(ctx)});
 	
 	if (!paused) {
-		Update();
+		MapGrid.update();
 	}
 	
 	setTimeout(Loop, 10)
-}
-
-function Update() {
-    MapGrid.update();
-	//newobjects = objects;
-	//objects.forEach(function (e) {e.update()});
-	//objects = newobjects; // particles should not act on Objects directly
 }
 
 uiObjects.push(new Button( {
