@@ -15,22 +15,31 @@ Particle.prototype.draw = function(context) {
 }
 
 Particle.prototype.update = function() {
-	var ytest = this.y - this.g;	
-	if (ytest < 240 && ytest >= 0) {
-            if (MapGrid.getParticle(this.x, ytest) == null) {
-                MapGrid.clearParticle(this.x, this.y);
-                MapGrid.setParticle(this.x, ytest, this);
-                this.y = ytest;
+    if (this.g == 0)
+        return;
+    var moved = false;
+    var initx = this.x;
+    var inity = this.y;
+    var ytest = this.y - this.g;
+    var xtest = this.x;
+    if (ytest < 240 && ytest >= 0) {
+        if (MapGrid.getParticle(this.x, ytest) == null) {
+            moved = MapGrid.moveParticle(this.x, ytest, this);
+        }
+        else if (!this.matter && MapGrid.getParticle(this.x, ytest).matter) {
+            MapGrid.clearParticle(this.x, this.y);
+            var exp = new Explosion(20); exp.x = this.x; exp.y = this.y;
+            MapGrid.setParticle(this.x, ytest, exp);
+        }
+        else {
+            xtest = this.x + Math.sign(Math.random() - 0.5);
+            if ((xtest < 320) && (xtest >= 0) && MapGrid.getParticle(xtest, this.y) == null) {
+                moved = MapGrid.moveParticle(xtest, this.y, this);
             }
-            else {
-                xtest = this.x + Math.sign(Math.random() - 0.5);
-                if ((xtest < 320) && (xtest >= 0) && MapGrid.getParticle(xtest, this.y) == null) {
-                    MapGrid.clearParticle(this.x, this.y);
-                    MapGrid.setParticle(xtest, this.y);
-                    this.x = xtest;
-                }
-            }
-	}
+        }
+        if (moved)
+            MapGrid.clearParticle(initx, inity);
+    }
 }
 
 Antiparticle.prototype = new Particle();
@@ -42,32 +51,6 @@ function Antiparticle() {
 	this.wet = false;
 	this.lubricant = false;
 	this.matter = false;
-}
-
-Antiparticle.prototype.update = function() {
-    var ytest = this.y - this.g;
-    var xtest = this.x;
-    //var index = newobjects.indexOf(this);
-    if (ytest < 240 && ytest >= 0) {
-        if (MapGrid.getParticle(this.x, ytest) == null) {
-            MapGrid.clearParticle(this.x, this.y);
-            MapGrid.setParticle(this.x, ytest, this);
-            this.y = ytest;
-        }
-        else if (MapGrid.getParticle(this.x, ytest).matter) {
-            MapGrid.clearParticle(this.x, this.y);
-            var exp = new Explosion(20); exp.x = this.x; exp.y = this.y;
-            MapGrid.setParticle(this.x, ytest, exp);
-        }
-        else {
-            xtest = this.x + Math.sign(Math.random() - 0.5);
-            if ((xtest < 320) && (xtest >= 0) && MapGrid.getParticle(xtest, this.y) == null) {
-                MapGrid.clearParticle(this.x, this.y);
-                MapGrid.setParticle(xtest, this.y);
-                this.x = xtest;
-            }
-        }
-    }
 }
 
 Oil.prototype = new Particle();
@@ -91,7 +74,6 @@ function Solid() {
 	this.lubricant = true;
 	this.matter = true;
 }
-Solid.prototype.update = function() {;}
 
 generalFactory.prototype = new Particle();
 generalFactory.prototype.constructor = generalFactory;
@@ -178,7 +160,6 @@ function Wick() {
 	this.lubricant = false;
 	this.matter = true;
 }
-Wick.prototype.update = function() {;}
 
 Wood.prototype = new Particle();
 Wood.prototype.constructor = Wood;

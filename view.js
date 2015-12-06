@@ -19,13 +19,25 @@ MapGrid = {
     particles: new Array(320 * 240),
     newparticles: new Array(320 * 240),
     getParticle: function(x, y) {
-        return this.particles[this.width * y + x];
+        var part = this.particles[this.width * y + x];
+        if (part === null || part === undefined)
+            return null;
+        else
+            return part;
     },
     setParticle: function(x, y, particle) {
         if (particle) {
             particle.x = x;
             particle.y = y;
             this.newparticles[this.width * y + x] = particle;
+        }
+    },
+    moveParticle: function(x, y, particle) {
+        if (this.newparticles[this.width * y + x])
+            return false;
+        else {
+            this.setParticle(x, y, particle);
+            return true;
         }
     },
     clearParticle: function(x, y) {
@@ -54,7 +66,11 @@ MapGrid = {
                 }
             }
         }
-        this.particles = this.newparticles;
+        if (nextobject) {
+            MapGrid.setParticle(nextobject.x, nextobject.y, nextobject);
+            nextobject = null;
+        }
+        this.particles = this.newparticles.slice(0);
     }
 }
 
@@ -103,10 +119,7 @@ function Loop() {
 	ctx = gamecanvas.getContext("2d");
 	ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
         
-        if (nextobject) {
-            MapGrid.setParticle(nextobject.x, nextobject.y, nextobject);
-            nextobject = null;
-        }
+
         
 	//objects.forEach(function (e) {e.draw(ctx)});
         MapGrid.drawGrid(ctx);
