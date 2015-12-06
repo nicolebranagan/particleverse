@@ -188,7 +188,7 @@ uiObjects.push(new Button( {
 	height: 25,
 	label: "Step",
 	clickFunction: function() {
-		Update();
+		MapGrid.update();
 		nextobject = null;
 		}
 } ));
