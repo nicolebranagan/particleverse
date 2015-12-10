@@ -1,12 +1,19 @@
 // Main view object
 
-var gamecanvas = document.getElementById('gamecanvas');
+//var gamecanvas = document.getElementById('gamecanvas');
+var manager = new CanvasManager( {
+    id: "gamecanvas",
+    updatecycle: 10,
+    drawcycle: 10,
+});
+var gamecanvas = manager.canvas;
+manager.Initialize();
+
 var objects = new Array();
-var uiObjects = new Array();
+//var uiObjects = new Array();
 var killList = new Array();
 var nextobject;
 var objType = Particle;
-
 var canDrag = false;
 var nowDragging = false;
 
@@ -102,12 +109,11 @@ function onFieldClick(event) {
 	if (canDrag)
 		nowDragging = true;
 	
-	uiObjects.forEach(function(e) {e.onClick(event)});
+	//uiObjects.forEach(function(e) {e.onClick(event)});
 }
 
 function onMouseUp(event) {
 	nowDragging = false;
-        uiObjects.forEach(function(e) {e.offClick(event)});
 }
 
 function onMouseMove(event) {
@@ -128,30 +134,25 @@ function onMouseMove(event) {
                     killList.push(dead);
 		}
 	}
-	uiObjects.forEach(function(e) {e.mouseMove(event)});
+	//uiObjects.forEach(function(e) {e.mouseMove(event)});
 }
 
-function Loop() {
-	ctx = gamecanvas.getContext("2d");
-	ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
-        
+manager.draw = function(ctx) {
+        MapGrid.drawGrid(ctx);
+}
+
+manager.update = function() {
         if (nextobject) {
             MapGrid.createParticle(nextobject.x, nextobject.y, nextobject);
             nextobject = null;
         }
         
-	//objects.forEach(function (e) {e.draw(ctx)});
-        MapGrid.drawGrid(ctx);
-	uiObjects.forEach(function (e) {e.draw(ctx)});
-	
 	if (!paused) {
 		MapGrid.update();
 	}
-	
-	setTimeout(Loop, 10)
 }
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 580,
 	y: 10,
 	width: 50,
@@ -170,7 +171,7 @@ uiObjects.push(new Button( {
 	}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 530,
 	y: 10,
 	width: 50,
@@ -181,7 +182,7 @@ uiObjects.push(new Button( {
         }
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 580,
 	y: 35,
 	width: 50,
@@ -193,7 +194,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 10,
 	y: 10,
 	width: 50,
@@ -206,7 +207,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 10,
 	y: 35,
 	width: 50,
@@ -220,7 +221,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 10,
 	y: 60,
 	width: 50,
@@ -234,7 +235,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 10,
 	y: 85,
 	width: 50,
@@ -248,7 +249,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 10,
 	y: 110,
 	width: 50,
@@ -262,7 +263,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 10,
 	y: 135,
 	width: 50,
@@ -276,7 +277,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 10,
 	y: 160,
 	width: 50,
@@ -290,7 +291,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 10,
 	y: 185,
 	width: 50,
@@ -304,7 +305,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 10,
 	y: 210,
 	width: 50,
@@ -318,7 +319,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 10,
 	y: 235,
 	width: 50,
@@ -332,7 +333,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 10,
 	y: 260,
 	width: 50,
@@ -346,7 +347,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 60,
 	y: 35,
 	width: 50,
@@ -360,7 +361,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 60,
 	y: 60,
 	width: 50,
@@ -374,7 +375,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 60,
 	y: 85,
 	width: 50,
@@ -388,7 +389,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 60,
 	y: 110,
 	width: 50,
@@ -402,7 +403,7 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-uiObjects.push(new Button( {
+manager.getManagedObject(new Button( {
 	x: 60,
 	y: 135,
 	width: 50,
@@ -416,8 +417,9 @@ uiObjects.push(new Button( {
 		}
 } ));
 
-gamecanvas.addEventListener("mousedown", onFieldClick, false);
-gamecanvas.addEventListener("mouseup", onMouseUp, false);
-gamecanvas.addEventListener("mousemove", onMouseMove, false);
-
-Loop();
+//gamecanvas.addEventListener("mousedown", onFieldClick, false);
+manager.onClick = onFieldClick;
+//gamecanvas.addEventListener("mouseup", onMouseUp, false);
+manager.offClick = onMouseUp;
+//gamecanvas.addEventListener("mousemove", onMouseMove, false);
+manager.mouseMove = onMouseMove;
