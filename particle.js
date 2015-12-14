@@ -199,6 +199,7 @@ function Plant() {
 Plant.prototype.update = function() {
 	var testx = this.x; var testy = this.y;
 	if (Math.random() > 0.6) {
+                //"Right-biased" algorithm
 		if ((Math.random() > 0.5) && (testx < 320)) 
 			testx = testx + 1;
 		else if ((Math.random() > 0.5) && (testx > 0))
@@ -292,11 +293,13 @@ function Nanobot(fromRust) {
 Nanobot.prototype.update = function() {
 	var testx = this.x; var testy = this.y;
 	if (Math.random() > 0.8) {
-		if ((Math.random() > 0.5) && (testx < 320)) 
+                // A cold, logical, actually-random algorithm
+                var dir = Math.floor(Math.random() * 4);
+		if ((dir == 0) && (testx < 320)) 
 			testx = testx + 1;
-		else if ((Math.random() > 0.5) && (testx > 0))
+		else if ((dir == 1) && (testx > 0))
 			testx = testx - 1;
-		else if ((Math.random() > 0.5) && (testy < 240)) 
+		else if ((dir == 2) && (testy < 240)) 
 			testy = testy + 1;
 		else if ((testy > 0))
 			testy = testy - 1;
