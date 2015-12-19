@@ -334,7 +334,7 @@ Nanobot.prototype.update = function() {
 	
 	this.counter = this.counter - 1;
 	if (this.counter < 0) {
-            MapGrid.setParticle(testx, testy, new Nanobot());
+            //MapGrid.setParticle(testx, testy, new Nanobot());
             if (this.fromRust) {
                 MapGrid.clearParticle(this.x, this.y);
             }
